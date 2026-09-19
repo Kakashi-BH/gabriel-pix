@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Pagamento via Pix</title>
+  <style>
+    :root{
+      --bg1:#070a12;
+      --bg2:#0b1220;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.12);
+      --txt: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --line: rgba(255,255,255,.14);
+      --ok: rgba(56, 239, 125, .22);
+      --warn: rgba(255, 214, 0, .18);
+      --shadow: 0 24px 60px rgba(0,0,0,.55);
+      --radius: 22px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100svh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--txt);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(126, 87, 255, .35), transparent 55%),
+        radial-gradient(1000px 700px at 80% 20%, rgba(0, 213, 255, .25), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(56, 239, 125, .18), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .wrap{ width:min(720px, 100%); }
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; margin-bottom:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(126,87,255,.9), rgba(0,213,255,.8));
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at 40% 40%, rgba(255,255,255,.65), transparent 55%);
+      transform: rotate(25deg);
+      opacity:.55;
+    }
+    .titlebox{ line-height:1.1; }
+    h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .sub{
+      font-size:13px; color:var(--muted);
+      margin-top:6px;
+    }
+    .chip{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      padding:8px 10px;
+      border-radius:999px;
+      backdrop-filter: blur(10px);
+      white-space:nowrap;
+    }
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.04));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(14px);
+    }
+    .cardin{ padding:18px; }
+    .hero{
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .hint{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+      border-radius:16px;
+    }
+    .dot{
+      margin-top:3px;
+      width:10px; height:10px; border-radius:99px;
+      background: rgba(56,239,125,.9);
+      box-shadow: 0 0 0 6px rgba(56,239,125,.12);
+      flex:0 0 auto;
+    }
+    .hint b{ display:block; margin-bottom:4px; font-size:14px;}
+    .hint span{ color:var(--muted); font-size:13px; }
+    textarea{
+      width:100%;
+      min-height:140px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.9);
+      padding:12px 12px;
+      font-size:12.8px;
+      line-height:1.35;
+      resize: none;
+      outline:none;
+    }
+    .actions{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    button{
+      appearance:none;
+      border:none;
+      border-radius:16px;
+      padding:14px 14px;
+      font-size:15px;
+      font-weight:650;
+      cursor:pointer;
+      transition: transform .06s ease, filter .12s ease;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+    .primary{
+      background: linear-gradient(135deg, rgba(56,239,125,.95), rgba(0,213,255,.85));
+      color:#06121b;
+    }
+    .secondary{
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.9);
+    }
+    .status{
+      margin-top:10px;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.82);
+      white-space:nowrap;
+    }
+    .ok{ background: var(--ok); border-color: rgba(56,239,125,.25); color: rgba(255,255,255,.92); }
+    .warn{ background: var(--warn); border-color: rgba(255,214,0,.25); color: rgba(255,255,255,.92); }
+
+    .foot{
+      margin-top:14px;
+      text-align:center;
+      color: rgba(255,255,255,.55);
+      font-size:12px;
+    }
+    .foot a{ color: rgba(255,255,255,.72); text-decoration:none; border-bottom:1px dashed rgba(255,255,255,.35);}
+    @media (max-width:520px){
+      .actions{ grid-template-columns: 1fr; }
+      .chip{ display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="titlebox">
+          <h1 id="nome">Luciene France Silverio</h1>
+          <div class="sub" id="sub">Pagamento rápido via Pix • Copia e cola</div>
+        </div>
+      </div>
+      <div class="chip">Encostou → Copie → Cole no seu banco</div>
+    </div>
+
+    <div class="card">
+      <div class="cardin">
+        <div class="hero">
+          <div class="hint">
+            <div class="dot" aria-hidden="true"></div>
+            <div>
+              <b>Como pagar</b>
+              <span>Toque em <b>Copiar Pix</b> e cole no app do seu banco em <b>Pix → Copia e Cola</b>.</span>
+            </div>
+          </div>
+
+          <textarea id="pix" readonly spellcheck="false"></textarea>
+
+          <div class="actions">
+            <button class="primary" id="copy">Copiar Pix</button>
+            <button class="secondary" id="share">Compartilhar</button>
+          </div>
+
+          <div class="status" id="status">
+            <div id="msg">Pronto para copiar.</div>
+            <div class="badge" id="badge">Pix</div>
+          </div>
+        </div>
+
+        <div class="foot">
+          Dica: se seu banco não colar direto, cole no campo “Pix Copia e Cola”.<br/>
+          <span id="tiny"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== PERSONALIZE AQUI ======
+    const NOME_EXIBICAO = "Leandro Costa";
+    const SUBTITULO = "Pagamento rápido via Pix • Copia e cola";
+    const PIX_CODE = "00020126360014br.gov.bcb.pix0114+55319992034425204000053039865802BR5901N6001C62070503***63045FD2";
+    // ==============================
+
+    const nome = document.getElementById("nome");
+    const sub = document.getElementById("sub");
+    const pix = document.getElementById("pix");
+    const btnCopy = document.getElementById("copy");
+    const btnShare = document.getElementById("share");
+    const msg = document.getElementById("msg");
+    const badge = document.getElementById("badge");
+    const tiny = document.getElementById("tiny");
+
+    nome.textContent = NOME_EXIBICAO;
+    sub.textContent = SUBTITULO;
+    pix.value = PIX_CODE;
+
+    function vibe(ms=20){
+      try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){}
+    }
+
+    function setStatus(text, kind){
+      msg.textContent = text;
+      badge.className = "badge" + (kind ? " " + kind : "");
+      badge.textContent = kind === "ok" ? "Copiado" : (kind === "warn" ? "Atenção" : "Pix");
+    }
+
+    async function copyPix(){
+      const text = pix.value;
+
+      // tenta clipboard moderno
+      try{
+        await navigator.clipboard.writeText(text);
+        setStatus("Copiado! Agora cole no seu banco em Pix → Copia e Cola.", "ok");
+        vibe(25);
+        return;
+      }catch(e){ /* fallback abaixo */ }
+
+      // fallback: seleciona o texto pro usuário copiar manualmente
+      pix.removeAttribute("readonly");
+      pix.focus();
+      pix.select();
+      pix.setSelectionRange(0, 99999);
+      pix.setAttribute("readonly", "readonly");
+      setStatus("Selecionei o código. Toque e segure para 'Copiar'.", "warn");
+      vibe(40);
+    }
+
+    btnCopy.addEventListener("click", copyPix);
+
+    btnShare.addEventListener("click", async () => {
+      const text = pix.value;
+      try{
+        if (navigator.share){
+          await navigator.share({ title: "Pix", text });
+          setStatus("Compartilhado.", "ok");
+          vibe(20);
+        } else {
+          await copyPix();
+          setStatus("Seu celular não suporta 'Compartilhar' aqui. Já deixei copiado.", "ok");
+        }
+      }catch(e){
+        // usuário cancelou share, tudo bem
+      }
+    });
+
+    // mini “checksum visual” (só pra dar confiança pro usuário)
+    (function(){
+      const s = PIX_CODE;
+      const head = s.slice(0, 6);
+      const tail = s.slice(-8);
+      tiny.textContent = `Código: ${head}…${tail}`;
+    })();
+
+    // vibração leve ao abrir (efeito “encostou”)
+    setTimeout(() => vibe(10), 180);
+  </script>
+</body>
+</html>
